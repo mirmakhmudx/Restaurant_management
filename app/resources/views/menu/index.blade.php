@@ -1,79 +1,78 @@
 @extends('layouts.app')
 @section('title', 'Menu')
-@section('page-title', 'Menu Management')
+@section('page-title', 'Menu')
 @section('page-subtitle', 'Manage your restaurant\'s full menu catalogue')
 
 @section('content')
 
-{{-- Toolbar --}}
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6"
-    x-data="{ search: '{{ $search }}', type: '{{ $type }}' }">
-
-    <div class="flex items-center gap-3 flex-1 w-full sm:w-auto">
-        {{-- Search --}}
-        <form method="GET" action="{{ route('menu.index') }}" class="flex-1 sm:w-80">
-            <div class="relative">
-                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <input type="text" name="search" value="{{ $search }}"
-                    placeholder="Search menu items..."
-                    class="w-full pl-10 pr-4 py-2.5 bg-stone-800/60 border border-stone-700/60 rounded-xl
-                           text-stone-100 placeholder-stone-500 text-sm outline-none
-                           focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/10">
-                @if($search)
-                <a href="{{ route('menu.index') }}"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </a>
-                @endif
-            </div>
-        </form>
+{{-- Top bar: title + Add button --}}
+<div class="flex items-center justify-between mb-5">
+    <div class="flex items-center gap-2">
+        <span class="text-sm font-medium text-gray-500">{{ $items->count() }} {{ $items->count() === 1 ? 'item' : 'items' }}</span>
     </div>
 
-    @if(auth()->user()->isManager())
     <a href="{{ route('menu.create') }}"
-        class="flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950
-               font-bold text-sm rounded-xl transition-all hover:-translate-y-0.5
-               hover:shadow-[0_8px_20px_rgba(245,158,11,0.25)] flex-shrink-0">
+       class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800
+              text-white text-sm font-semibold rounded-lg transition-colors shadow-sm">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
         </svg>
         Add Item
     </a>
-    @endif
 </div>
 
-{{-- Type filter tabs --}}
-<div class="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
-    @foreach([
-        ['all',         'All',         '🍴', $items->count()],
-        ['starter',     'Starters',    '🥗', $items->filter(fn($i)=>$i->type->value==='starter')->count()],
-        ['main_course', 'Mains',       '🍽️', $items->filter(fn($i)=>$i->type->value==='main_course')->count()],
-        ['dessert',     'Desserts',    '🍰', $items->filter(fn($i)=>$i->type->value==='dessert')->count()],
-        ['beverage',    'Beverages',   '🥤', $items->filter(fn($i)=>$i->type->value==='beverage')->count()],
-    ] as [$val, $label, $icon, $count])
-    <a href="{{ route('menu.index', ['search' => $search, 'type' => $val]) }}"
-        class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all
-        {{ $type === $val
-            ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-            : 'text-stone-500 hover:text-stone-300 border border-transparent hover:border-stone-700' }}">
-        <span>{{ $icon }}</span>
-        {{ $label }}
-        <span class="text-xs px-1.5 py-0.5 rounded-full {{ $type === $val ? 'bg-amber-500/20 text-amber-300' : 'bg-stone-800 text-stone-500' }}">
-            {{ $count }}
+{{-- Search --}}
+<form method="GET" action="{{ route('menu.index') }}" class="relative mb-5">
+    <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    <input type="text" name="search" value="{{ $search }}"
+           placeholder="Search by name or description..."
+           class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900
+                  placeholder-gray-400 bg-white outline-none
+                  focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 transition-all">
+    @if($search)
+    <a href="{{ route('menu.index') }}"
+       class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+    </a>
+    @endif
+</form>
+
+{{-- Category tabs --}}
+@php
+$tabs = [
+    'all'         => ['label'=>'All',       'count'=> $items->count()],
+    'starter'     => ['label'=>'Starters',  'count'=> $items->filter(fn($i)=>$i->type->value==='starter')->count()],
+    'main_course' => ['label'=>'Mains',     'count'=> $items->filter(fn($i)=>$i->type->value==='main_course')->count()],
+    'dessert'     => ['label'=>'Desserts',  'count'=> $items->filter(fn($i)=>$i->type->value==='dessert')->count()],
+    'beverage'    => ['label'=>'Beverages', 'count'=> $items->filter(fn($i)=>$i->type->value==='beverage')->count()],
+];
+@endphp
+<div class="flex items-center gap-1 mb-6 bg-gray-100 p-1 rounded-lg w-fit">
+    @foreach($tabs as $val => $meta)
+    <a href="{{ route('menu.index', ['search'=>$search, 'type'=>$val]) }}"
+       class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all whitespace-nowrap
+       {{ $type === $val
+           ? 'bg-white text-gray-900 shadow-sm'
+           : 'text-gray-500 hover:text-gray-700' }}">
+        {{ $meta['label'] }}
+        <span class="text-xs {{ $type === $val ? 'text-gray-700' : 'text-gray-400' }}">
+            {{ $meta['count'] }}
         </span>
     </a>
     @endforeach
 </div>
 
-{{-- Flash message --}}
+{{-- Flash --}}
 @if(session('success'))
-<div class="mb-5 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-300 text-sm">
+<div class="mb-5 flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+    </svg>
     {{ session('success') }}
 </div>
 @endif
@@ -81,159 +80,163 @@
 {{-- Empty state --}}
 @if($items->isEmpty())
 <div class="flex flex-col items-center justify-center py-24 text-center">
-    <div class="text-5xl mb-4">🍴</div>
-    <p class="text-stone-300 font-semibold text-lg">No menu items found</p>
-    <p class="text-stone-600 text-sm mt-1">
-        {{ $search ? 'Try a different search term' : 'Start by adding your first menu item' }}
-    </p>
-    @if(auth()->user()->isManager() && !$search)
+    <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
+        <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+        </svg>
+    </div>
+    <p class="font-semibold text-gray-900 mb-1">No items found</p>
+    <p class="text-sm text-gray-500 mb-5">{{ $search ? 'Try a different search term' : 'Add your first menu item' }}</p>
+    @if(!$search)
     <a href="{{ route('menu.create') }}"
-        class="mt-6 px-5 py-2.5 bg-amber-500 text-stone-950 font-bold text-sm rounded-xl
-               hover:bg-amber-400 transition-all">
-        + Add First Item
+       class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+        </svg>
+        Add First Item
     </a>
     @endif
 </div>
 
 @else
 
-{{-- Menu Grid --}}
+{{-- Items grouped by type --}}
 @foreach($grouped as $typeValue => $typeItems)
 @php $menuType = \App\Enums\MenuItemType::from($typeValue); @endphp
 
 <div class="mb-8">
-    <div class="flex items-center gap-3 mb-4">
-        <span class="text-xl">{{ $menuType->icon() }}</span>
-        <h3 class="text-stone-300 font-bold text-base">{{ $menuType->label() }}</h3>
-        <span class="text-xs text-stone-600 font-medium">({{ $typeItems->count() }} items)</span>
-        <div class="flex-1 h-px bg-stone-800 ml-2"></div>
+    <div class="flex items-center gap-2 mb-4">
+        <span class="text-base">{{ $menuType->icon() }}</span>
+        <h3 class="font-semibold text-gray-900 text-sm">{{ $menuType->label() }}</h3>
+        <span class="text-xs text-gray-400">{{ $typeItems->count() }} {{ $typeItems->count() === 1 ? 'item' : 'items' }}</span>
+        <div class="flex-1 h-px bg-gray-200 ml-1"></div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
         @foreach($typeItems as $item)
-        <div class="group bg-stone-900/60 border border-stone-700/40 rounded-2xl p-4
-                    hover:border-stone-600/60 transition-all hover:-translate-y-0.5
-                    hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] flex flex-col"
-            x-data="{ available: {{ $item->is_available ? 'true' : 'false' }}, loading: false }">
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow group"
+             x-data="{ available: {{ $item->is_available ? 'true' : 'false' }}, saving: false }">
 
-            {{-- Header --}}
-            <div class="flex items-start justify-between mb-3">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border {{ $item->type->badgeClasses() }}">
-                    {{ $item->type->icon() }} {{ $item->type->label() }}
-                </span>
-
-                {{-- Availability toggle (Manager only) --}}
-                @if(auth()->user()->isManager())
-                <button
-                    x-on:click="
-                        loading = true;
-                        fetch('{{ route('menu.toggle', $item) }}', {
-                            method: 'PATCH',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(r => r.json())
-                        .then(d => { available = d.is_available; loading = false; })
-                        .catch(() => loading = false)
-                    "
-                    x-bind:class="available ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25'
-                                            : 'bg-stone-800 text-stone-500 border-stone-700 hover:bg-stone-700'"
-                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-all">
-                    <span x-show="!loading">
-                        <span x-show="available">● On</span>
-                        <span x-show="!available" style="display:none">○ Off</span>
-                    </span>
-                    <svg x-show="loading" style="display:none" class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                    </svg>
-                </button>
-                @else
-                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border
-                    {{ $item->is_available
-                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                        : 'bg-stone-800 text-stone-500 border-stone-700' }}">
-                    {{ $item->is_available ? '● Available' : '○ Unavailable' }}
-                </span>
-                @endif
-            </div>
-
-            {{-- Name & Description --}}
-            <h4 class="text-stone-100 font-bold text-base mb-1 leading-tight">{{ $item->name }}</h4>
-            @if($item->description)
-            <p class="text-stone-500 text-xs leading-relaxed mb-3 flex-1 line-clamp-2">
-                {{ $item->description }}
-            </p>
-            @else
-            <div class="flex-1"></div>
-            @endif
-
-            {{-- Dietary labels --}}
-            @if($item->getDietaryLabels())
-            <div class="flex flex-wrap gap-1.5 mb-3">
-                @foreach($item->getDietaryLabels() as $label)
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-800/80 border border-stone-700/50
-                             rounded-md text-stone-400 text-xs">
-                    {{ $label['icon'] }} {{ $label['label'] }}
-                </span>
-                @endforeach
-            </div>
-            @endif
-
-            {{-- Meta info --}}
-            <div class="flex items-center gap-3 text-xs text-stone-600 mb-4">
-                <span class="flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    {{ $item->prep_time_minutes }}min
-                </span>
-                @if($item->calories)
-                <span>· {{ $item->calories }} kcal</span>
-                @endif
-                @if($item->allergens && count($item->allergens))
-                <span>· ⚠️ {{ count($item->allergens) }} allergen{{ count($item->allergens) > 1 ? 's' : '' }}</span>
-                @endif
-            </div>
-
-            {{-- Footer --}}
-            <div class="flex items-center justify-between pt-3 border-t border-stone-700/40">
-                <span class="text-amber-400 font-bold text-lg tracking-tight">
-                    {{ $item->getFormattedPrice() }}
-                </span>
-
-                @if(auth()->user()->isManager())
-                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href="{{ route('menu.edit', $item) }}"
-                        class="p-2 text-stone-500 hover:text-stone-200 hover:bg-stone-700/50 rounded-lg transition-all"
-                        title="Edit">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                    </a>
-                    <form method="POST" action="{{ route('menu.destroy', $item) }}"
-                        x-on:submit.prevent="if(confirm('Remove \'{{ $item->name }}\' from the menu?')) $el.submit()">
-                        @csrf @method('DELETE')
-                        <button type="submit"
-                            class="p-2 text-stone-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
-                            title="Delete">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
-                    </form>
+            {{-- Image or placeholder --}}
+            @if($item->hasImage())
+            <div class="relative h-40 overflow-hidden bg-gray-100">
+                <img src="{{ $item->getImageUrl() }}" alt="{{ $item->name }}"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                {{-- Availability overlay --}}
+                @if(!$item->is_available)
+                <div class="absolute inset-0 bg-gray-900/50 flex items-center justify-center">
+                    <span class="text-white text-xs font-semibold px-2 py-1 bg-gray-900/80 rounded-md">Unavailable</span>
                 </div>
                 @endif
+            </div>
+            @else
+            <div class="h-32 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
+                <span class="text-5xl opacity-30">{{ $menuType->icon() }}</span>
+                @if(!$item->is_available)
+                <div class="absolute inset-0 bg-gray-50/60 flex items-center justify-center">
+                    <span class="text-xs font-medium text-gray-400">Unavailable</span>
+                </div>
+                @endif
+            </div>
+            @endif
+
+            <div class="p-4 flex flex-col flex-1">
+                {{-- Type badge + availability --}}
+                <div class="flex items-center justify-between mb-2">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border {{ $item->type->badgeClasses() }}">
+                        {{ $item->type->icon() }} {{ $item->type->label() }}
+                    </span>
+
+                    @if(auth()->user()->isManager())
+                    <button type="button"
+                        x-on:click="saving=true; fetch('{{ route('menu.toggle', $item) }}', { method:'PATCH', headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'} }).then(r=>r.json()).then(d=>{ available=d.is_available; saving=false; }).catch(()=>saving=false)"
+                        class="flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full transition-colors cursor-pointer border"
+                        x-bind:class="available ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-100 text-gray-500 border-gray-200'">
+                        <span x-show="!saving">
+                            <span x-show="available" class="flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>On
+                            </span>
+                            <span x-show="!available" style="display:none" class="flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>Off
+                            </span>
+                        </span>
+                        <svg x-show="saving" style="display:none" class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                    </button>
+                    @else
+                    <span class="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border
+                        {{ $item->is_available ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-100 text-gray-500 border-gray-200' }}">
+                        <span class="w-1.5 h-1.5 rounded-full {{ $item->is_available ? 'bg-green-500' : 'bg-gray-400' }}"></span>
+                        {{ $item->is_available ? 'On' : 'Off' }}
+                    </span>
+                    @endif
+                </div>
+
+                {{-- Name + Description --}}
+                <h4 class="font-semibold text-gray-900 text-sm mb-0.5">{{ $item->name }}</h4>
+                @if($item->description)
+                <p class="text-xs text-gray-500 line-clamp-2 flex-1 mb-2">{{ $item->description }}</p>
+                @else
+                <div class="flex-1 mb-2"></div>
+                @endif
+
+                {{-- Dietary --}}
+                @if($item->getDietaryLabels())
+                <div class="flex flex-wrap gap-1 mb-2">
+                    @foreach($item->getDietaryLabels() as $lbl)
+                    <span class="text-xs px-1.5 py-0.5 bg-gray-50 border border-gray-200 rounded text-gray-600">
+                        {{ $lbl['icon'] }} {{ $lbl['label'] }}
+                    </span>
+                    @endforeach
+                </div>
+                @endif
+
+                {{-- Meta --}}
+                <div class="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                    <span class="flex items-center gap-0.5">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{ $item->prep_time_minutes }}min
+                    </span>
+                    @if($item->calories)<span>· {{ $item->calories }} kcal</span>@endif
+                    @if($item->allergens && count($item->allergens) > 0)
+                    <span class="text-orange-400">· ⚠ {{ count($item->allergens) }}</span>
+                    @endif
+                </div>
+
+                {{-- Footer --}}
+                <div class="flex items-center justify-between pt-2.5 border-t border-gray-100">
+                    <span class="font-bold text-gray-900">{{ $item->getFormattedPrice() }}</span>
+                    @if(auth()->user()->isManager())
+                    <div class="flex items-center gap-0.5">
+                        <a href="{{ route('menu.edit', $item) }}"
+                           class="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all" title="Edit">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
+                            </svg>
+                        </a>
+                        <form method="POST" action="{{ route('menu.destroy', $item) }}"
+                              x-on:submit.prevent="if(confirm('Delete \'{{ addslashes($item->name) }}\'?')) $el.submit()">
+                            @csrf @method('DELETE')
+                            <button type="submit"
+                                class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                    @endif
+                </div>
             </div>
         </div>
         @endforeach
     </div>
 </div>
 @endforeach
-@endif
 
+@endif
 @endsection

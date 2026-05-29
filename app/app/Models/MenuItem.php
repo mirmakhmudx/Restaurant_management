@@ -7,24 +7,16 @@ use App\Enums\MenuItemType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class MenuItem extends Model implements MenuItemInterface
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'description',
-        'type',
-        'price',
-        'allergens',
-        'prep_time_minutes',
-        'calories',
-        'is_available',
-        'is_vegetarian',
-        'is_vegan',
-        'is_gluten_free',
-        'sort_order',
+        'name', 'description', 'image_path', 'type', 'price',
+        'allergens', 'prep_time_minutes', 'calories',
+        'is_available', 'is_vegetarian', 'is_vegan', 'is_gluten_free', 'sort_order',
     ];
 
     protected function casts(): array
@@ -47,6 +39,17 @@ class MenuItem extends Model implements MenuItemInterface
     public function getType(): string        { return $this->type->value; }
     public function getPrepTime(): int       { return $this->prep_time_minutes; }
     public function isAvailable(): bool      { return $this->is_available; }
+
+    // ── Image ─────────────────────────────────────────
+    public function getImageUrl(): ?string
+    {
+        return $this->image_path ? Storage::url($this->image_path) : null;
+    }
+
+    public function hasImage(): bool
+    {
+        return !empty($this->image_path);
+    }
 
     // ── Helpers ───────────────────────────────────────
     public function getFormattedPrice(): string

@@ -9,6 +9,7 @@ use App\Services\MenuItemService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class MenuController extends Controller
@@ -49,10 +50,16 @@ class MenuController extends Controller
         $data['is_gluten_free'] = $request->boolean('is_gluten_free');
         $data['allergens']      = $request->input('allergens', []);
 
+        // ── Image Upload ──────────────────────────────
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')
+                ->store('menu', 'public');
+        }
+
         $item = $this->service->create($data);
 
         return redirect()->route('menu.index')
-            ->with('success', "✅ \"{$item->name}\" added to menu successfully.");
+            ->with('success', "✅ \"{$item->name}\" added to menu.");
     }
 
     public function edit(MenuItem $menuItem): View
@@ -69,24 +76,39 @@ class MenuController extends Controller
         $data['is_gluten_free'] = $request->boolean('is_gluten_free');
         $data['allergens']      = $request->input('allergens', []);
 
+        // ── Image Upload ──────────────────────────────
+        if ($request->hasFile('image')) {
+            if ($menuItem->image_path) {
+                Storage::disk('public')->delete($menuItem->image_path);
+            }
+            $data['image_path'] = $request->file('image')
+                ->store('menu', 'public');
+        }
+
+        // Remove image if requested
+        if ($request->boolean('remove_image') && $menuItem->image_path) {
+            Storage::disk('public')->delete($menuItem->image_path);
+            $data['image_path'] = null;
+        }
+
         $this->service->update($menuItem, $data);
 
         return redirect()->route('menu.index')
-            ->with('success', "✅ \"{$menuItem->name}\" updated successfully.");
+            ->with('success', "✅ \"{$menuItem->name}\" updated.");
     }
 
     public function destroy(MenuItem $menuItem): RedirectResponse
     {
+        if ($menuItem->image_path) {
+            Storage::disk('public')->delete($menuItem->image_path);
+        }
         $name = $menuItem->name;
         $this->service->delete($menuItem);
 
         return redirect()->route('menu.index')
-            ->with('success', "🗑️ \"{$name}\" removed from menu.");
+            ->with('success', "🗑️ \"{$name}\" removed.");
     }
 
-    /**
-     * Toggle available/unavailable via AJAX.
-     */
     public function toggleAvailability(MenuItem $menuItem): JsonResponse
     {
         $updated = $this->service->toggleAvailability($menuItem);
@@ -94,20 +116,12 @@ class MenuController extends Controller
         return response()->json([
             'success'      => true,
             'is_available' => $updated->is_available,
-            'message'      => $updated->is_available
-                ? "{$updated->name} is now available"
-                : "{$updated->name} marked as unavailable",
         ]);
     }
 
-    /**
-     * Live search endpoint for Alpine.js / AJAX.
-     */
     public function search(Request $request): JsonResponse
     {
-        $query = $request->query('q', '');
-        $items = $query ? $this->service->search($query) : $this->service->getAll();
-
+        $items = $this->service->search($request->query('q', ''));
         return response()->json($items->values());
     }
 }

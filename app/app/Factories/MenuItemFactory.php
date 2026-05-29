@@ -5,17 +5,10 @@ namespace App\Factories;
 use App\Enums\MenuItemType;
 use App\Models\MenuItem;
 
-/**
- * Factory Pattern — creates MenuItem instances based on type.
- * Each type gets sensible defaults appropriate for its category.
- *
- * Design Pattern: Factory Method
- */
+
 class MenuItemFactory
 {
-    /**
-     * Create a MenuItem with type-appropriate defaults.
-     */
+
     public function create(array $data): MenuItem
     {
         $type = MenuItemType::from($data['type']);
@@ -27,13 +20,12 @@ class MenuItemFactory
             MenuItemType::Beverage   => $this->beverageDefaults(),
         };
 
-        // Merge: provided data overrides defaults
         $merged = array_merge($defaults, array_filter($data, fn($v) => $v !== null && $v !== ''));
 
         return MenuItem::create($merged);
     }
 
-    // ── Type-specific defaults ─────────────────────────
+
 
     private function starterDefaults(): array
     {

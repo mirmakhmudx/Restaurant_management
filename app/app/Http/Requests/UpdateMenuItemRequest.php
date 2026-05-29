@@ -28,6 +28,8 @@ class UpdateMenuItemRequest extends FormRequest
             'is_vegetarian'     => ['boolean'],
             'is_vegan'          => ['boolean'],
             'is_gluten_free'    => ['boolean'],
+            'image'             => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'remove_image'      => ['boolean'],
         ];
     }
 }

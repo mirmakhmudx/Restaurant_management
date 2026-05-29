@@ -2,43 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Bill;
+use App\Models\MenuItem;
+use App\Models\Order;
+use App\Models\Table;
+use App\Models\User;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request): View
+    public function index(): View
     {
-        $user  = $request->user();
+        // ── Live stats ────────────────────────────────────────────
+        $stats = [
+            'orders_today'   => Order::whereDate('created_at', today())->count(),
+            'active_tables'  => Table::where('status', 'occupied')->count(),
+            'revenue_today'  => Bill::whereDate('paid_at', today())->sum('total'),
+            'staff_on_duty'  => User::where('is_active', true)->count(),
+            'pending_orders' => Order::where('status', 'pending')->count(),
+            'kitchen_active' => Order::whereIn('status', ['confirmed','preparing'])->count(),
+            'ready_orders'   => Order::where('status', 'ready')->count(),
+            'pending_bills'  => Order::where('status', 'served')->count(),
+        ];
 
-        $stats = match(true) {
-            $user->isManager() => [
-                ['label' => 'Total Orders Today', 'value' => '0',  'icon' => '📋'],
-                ['label' => 'Active Tables',       'value' => '0',  'icon' => '🪑'],
-                ['label' => "Today's Revenue",     'value' => '£0', 'icon' => '💰'],
-                ['label' => 'Staff On Duty',       'value' => '4',  'icon' => '👥'],
-            ],
-            $user->isWaiter() => [
-                ['label' => 'My Active Orders', 'value' => '0', 'icon' => '📋'],
-                ['label' => 'Tables Assigned',  'value' => '0', 'icon' => '🪑'],
-                ['label' => 'Orders Served',    'value' => '0', 'icon' => '✅'],
-                ['label' => 'Pending Bills',    'value' => '0', 'icon' => '⏳'],
-            ],
-            $user->isChef() => [
-                ['label' => 'Orders in Queue', 'value' => '0', 'icon' => '🔥'],
-                ['label' => 'Preparing Now',   'value' => '0', 'icon' => '👨‍🍳'],
-                ['label' => 'Ready to Serve',  'value' => '0', 'icon' => '✅'],
-                ['label' => 'Completed Today', 'value' => '0', 'icon' => '📊'],
-            ],
-            $user->isCashier() => [
-                ['label' => 'Bills Pending',    'value' => '0',  'icon' => '⏳'],
-                ['label' => 'Paid Today',       'value' => '0',  'icon' => '💳'],
-                ['label' => "Today's Revenue",  'value' => '£0', 'icon' => '💰'],
-                ['label' => 'Avg Bill Value',   'value' => '£0', 'icon' => '📊'],
-            ],
-            default => [],
-        };
+        // ── Recent orders (last 6) ────────────────────────────────
+        $recentOrders = Order::with(['table', 'waiter'])
+            ->latest()
+            ->take(6)
+            ->get();
 
-        return view('dashboard.index', compact('stats'));
+        // ── Pending approvals ─────────────────────────────────────
+        $pendingStaff = User::where('is_active', false)->count();
+
+        return view('dashboard', compact('stats', 'recentOrders', 'pendingStaff'));
     }
 }

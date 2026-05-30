@@ -121,6 +121,16 @@
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/voku/portable-ascii" />
       <excludeFolder url="file://$MODULE_DIR$/app/storage/app" />
       <excludeFolder url="file://$MODULE_DIR$/app/storage/framework" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/bacon/bacon-qr-code" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/barryvdh/laravel-dompdf" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/dasprid/enum" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/dompdf/dompdf" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/dompdf/php-font-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/dompdf/php-svg-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/masterminds/html5" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/sabberworm/php-css-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/simplesoftwareio/simple-qrcode" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/thecodingmachine/safe" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

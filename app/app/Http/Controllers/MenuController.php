@@ -20,20 +20,50 @@ class MenuController extends Controller
 
     public function index(Request $request): View
     {
-        $search = $request->query('search', '');
-        $type   = $request->query('type', 'all');
+        $search    = $request->query('search', '');
+        $type      = $request->query('type', 'all');
+        $available = $request->query('available', 'all');
+        $dietary   = $request->query('dietary', []);
+        $priceMin  = $request->query('price_min', '');
+        $priceMax  = $request->query('price_max', '');
 
         $items = $search
             ? $this->service->search($search)
             : $this->service->getAll();
 
         if ($type !== 'all') {
-            $items = $items->filter(fn($item) => $item->type->value === $type);
+            $items = $items->filter(fn($i) => $i->type->value === $type);
+        }
+        if ($available === 'yes') {
+            $items = $items->filter(fn($i) => $i->is_available);
+        } elseif ($available === 'no') {
+            $items = $items->filter(fn($i) => !$i->is_available);
+        }
+        if (in_array('vegetarian', $dietary)) {
+            $items = $items->filter(fn($i) => $i->is_vegetarian);
+        }
+        if (in_array('vegan', $dietary)) {
+            $items = $items->filter(fn($i) => $i->is_vegan);
+        }
+        if (in_array('gluten_free', $dietary)) {
+            $items = $items->filter(fn($i) => $i->is_gluten_free);
+        }
+        if ($priceMin !== '') {
+            $items = $items->filter(fn($i) => $i->price >= (float)$priceMin);
+        }
+        if ($priceMax !== '') {
+            $items = $items->filter(fn($i) => $i->price <= (float)$priceMax);
         }
 
-        $grouped = $items->groupBy(fn($item) => $item->type->value);
+        $grouped    = $items->groupBy(fn($item) => $item->type->value);
+        $categories = \App\Models\MenuCategory::where('is_active', true)->orderBy('sort_order')->get();
 
-        return view('menu.index', compact('items', 'grouped', 'search', 'type'));
+        $activeFilters = array_filter(compact('search','available','priceMin','priceMax') + ['dietary' => $dietary]);
+
+        return view('menu.index', compact(
+            'items','grouped','search','type','available',
+            'dietary','priceMin','priceMax','categories','activeFilters'
+        ));
     }
 
     public function create(): View
@@ -64,6 +94,7 @@ class MenuController extends Controller
 
     public function edit(MenuItem $menuItem): View
     {
+        $menuItem->load('modifiers');
         return view('menu.edit', ['item' => $menuItem]);
     }
 

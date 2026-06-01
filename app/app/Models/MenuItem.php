@@ -43,12 +43,14 @@ class MenuItem extends Model implements MenuItemInterface
     // ── Image ─────────────────────────────────────────
     public function getImageUrl(): ?string
     {
-        return $this->image_path ? Storage::url($this->image_path) : null;
+        return $this->image_path
+            ? \Illuminate\Support\Facades\Storage::url($this->image_path)
+            : null;
     }
 
     public function hasImage(): bool
     {
-        return !empty($this->image_path);
+        return !empty($this->image_path) && $this->image_path !== null;
     }
 
     // ── Helpers ───────────────────────────────────────
@@ -88,5 +90,22 @@ class MenuItem extends Model implements MenuItemInterface
             $q->where('name', 'ilike', "%{$term}%")
               ->orWhere('description', 'ilike', "%{$term}%");
         });
+    }
+    public function getAvailable(): \Illuminate\Support\Collection
+    {
+        return $this->repository->all()
+            ->where('is_available', true)
+            ->values();
+    }
+    public function modifiers(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(MenuModifier::class)->orderBy('sort_order');
+    }
+
+    public function activeModifiers(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(MenuModifier::class)
+            ->where('is_available', true)
+            ->orderBy('sort_order');
     }
 }

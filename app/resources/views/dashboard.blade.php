@@ -169,33 +169,92 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-    <div class="lg:col-span-2 bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-100">
-            <h3 class="font-bold text-gray-900 text-sm">🏗 Design Patterns — 10 ta faol</h3>
-            <p class="text-xs text-gray-400 mt-0.5">BTEC Level 5 · Unit 27 · Advanced Programming</p>
-        </div>
-        <div class="grid grid-cols-2 gap-px bg-gray-100">
-            @foreach([
-                ['Singleton',    'OrderHistoryService',  'Bitta global audit log instance',           'bg-violet-50 text-violet-800 border-violet-200'],
-                ['Command',      'KitchenQueue',         'Kitchen operatsiyalarini encapsulate',       'bg-amber-50  text-amber-800  border-amber-200'],
-                ['Strategy',     '4 ta Pricing',         'Narx algoritmini dinamik almashtirish',     'bg-blue-50   text-blue-800   border-blue-200'],
-                ['Observer',     'OrderObserver',        "Order o'zgarishlarini kuzatish",            'bg-green-50  text-green-800  border-green-200'],
-                ['State',        '7 ta holat',           'Order lifecycle: Pending → Billed',         'bg-red-50    text-red-800    border-red-200'],
-                ['Repository',   'MenuItemRepository',   'Database dan abstraksiya qatlami',          'bg-indigo-50 text-indigo-800 border-indigo-200'],
-                ['Factory',      'MenuItemFactory',      "Tip bo'yicha object yaratish",              'bg-orange-50 text-orange-800 border-orange-200'],
-                ['Facade',       'BillingFacade',        'Billing ni soddalashtirish',                'bg-teal-50   text-teal-800   border-teal-200'],
-                ['Service Layer','MenuItemService',      'Business logic ajratish',                   'bg-pink-50   text-pink-800   border-pink-200'],
-                ['Decorator',    'SpecialOffer',         "Xususiyat qo'shish",                        'bg-cyan-50   text-cyan-800   border-cyan-200'],
-            ] as [$p,$impl,$desc,$cls])
-            <div class="bg-white px-4 py-3 hover:bg-gray-50 transition-colors">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="text-xs font-bold text-gray-900">{{ $p }}</span>
-                    <span class="text-xs px-1.5 py-0.5 rounded border font-medium {{ $cls }}">{{ $impl }}</span>
+    <div class="lg:col-span-2 space-y-4">
+
+        {{-- Analytics Cards --}}
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-medium text-gray-500">Bugungi daromad</p>
+                    <span class="text-lg">💰</span>
                 </div>
-                <p class="text-xs text-gray-400">{{ $desc }}</p>
+                <p class="text-2xl font-bold text-gray-900">£{{ number_format($stats["revenue_today"], 2) }}</p>
+                @if($stats["revenue_yesterday"] > 0)
+                @php $diff = $stats["revenue_today"] - $stats["revenue_yesterday"]; @endphp
+                <p class="text-xs mt-1 {{ $diff >= 0 ? "text-green-600" : "text-red-500" }}">
+                    {{ $diff >= 0 ? "↑" : "↓" }} £{{ number_format(abs($diff), 2) }} kecha nisbatan
+                </p>
+                @endif
             </div>
-            @endforeach
+
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-medium text-gray-500">Bugungi orderlar</p>
+                    <span class="text-lg">📋</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $stats["orders_today"] }}</p>
+                <p class="text-xs mt-1 {{ $stats["pending_orders"] > 0 ? "text-amber-600" : "text-green-600" }}">
+                    {{ $stats["pending_orders"] > 0 ? $stats["pending_orders"]." ta kutilmoqda" : "Hammasi bajarildi ✓" }}
+                </p>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-medium text-gray-500">Band stollar</p>
+                    <span class="text-lg">🪑</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $stats["active_tables"] }}<span class="text-sm text-gray-400 font-normal">/{{ $stats["total_tables"] }}</span></p>
+                <div class="mt-1 bg-gray-100 rounded-full h-1.5">
+                    <div class="bg-gray-900 h-1.5 rounded-full" style="width:{{ $stats["total_tables"] > 0 ? ($stats["active_tables"]/$stats["total_tables"]*100) : 0 }}%"></div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-medium text-gray-500">Top taom (bugun)</p>
+                    <span class="text-lg">⭐</span>
+                </div>
+                <p class="text-base font-bold text-gray-900 truncate">{{ $stats["top_dish"] }}</p>
+                <p class="text-xs text-gray-400 mt-1">{{ $stats["top_dish_qty"] }} ta buyurtma qilindi</p>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-medium text-gray-500">Bronlar (bugun)</p>
+                    <span class="text-lg">📅</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $stats["reservations_today"] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Bugungi rezervatsiyalar</p>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-medium text-gray-500">Peak soat</p>
+                    <span class="text-lg">⏰</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">{{ $stats["peak_hour"] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Eng band vaqt</p>
+            </div>
         </div>
+
+        {{-- Kitchen Status --}}
+        <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <h3 class="font-bold text-gray-900 text-sm mb-3">🍳 Kitchen holati</h3>
+            <div class="grid grid-cols-4 gap-3">
+                @foreach([
+                    ["Pending",    $stats["pending_orders"],  "bg-gray-100",   "text-gray-700"],
+                    ["Preparing",  $stats["kitchen_active"],  "bg-amber-100",  "text-amber-700"],
+                    ["Ready",      $stats["ready_orders"],    "bg-green-100",  "text-green-700"],
+                    ["To pay",     $stats["pending_bills"],   "bg-blue-100",   "text-blue-700"],
+                ] as [$label, $count, $bg, $text])
+                <div class="text-center p-3 {{ $bg }} rounded-xl">
+                    <p class="text-2xl font-bold {{ $text }}">{{ $count }}</p>
+                    <p class="text-xs {{ $text }} mt-0.5 font-medium">{{ $label }}</p>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
     </div>
 
     <div class="space-y-4">

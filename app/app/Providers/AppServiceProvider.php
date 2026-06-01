@@ -18,8 +18,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(MenuItemRepositoryInterface::class, MenuItemRepository::class);
 
         // Singleton Pattern
-        $this->app->singleton(OrderHistoryService::class, fn () => new OrderHistoryService());
-
+        $this->app->singleton(OrderHistoryService::class, function () {
+            return OrderHistoryService::getInstance();
+        });
         // Command Pattern invoker
         $this->app->singleton(KitchenQueue::class);
 

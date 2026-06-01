@@ -7,6 +7,52 @@
     <title>@yield('title', 'Dashboard') — BitePlate</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
+{{-- Real-time Notifications --}}
+<div id="toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:320px"></div>
+
+<script>
+    function showToast(message, type = 'info') {
+        const colors = {
+            info:    '#3b82f6',
+            success: '#22c55e',
+            warning: '#f59e0b',
+            kitchen: '#f97316',
+        };
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+        background:white;border-left:4px solid ${colors[type] || colors.info};
+        padding:12px 16px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);
+        font-size:13px;font-family:sans-serif;cursor:pointer;
+        animation:slideIn .3s ease;
+    `;
+        toast.innerHTML = `<p style="font-weight:600;color:#111;margin:0 0 2px">${message.title}</p>
+                       <p style="color:#6b7280;margin:0;font-size:12px">${message.body}</p>`;
+        toast.onclick = () => toast.remove();
+        document.getElementById('toast-container').appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
+    }
+
+    if (typeof window.Echo !== 'undefined') {
+        window.Echo.channel('orders')
+            .listen('.status.updated', (e) => {
+                const messages = {
+                    'confirmed':  { title: '✅ Tasdiqlandi',    body: e.order_number + ' — ' + e.table, type: 'success'  },
+                    'preparing':  { title: '🔥 Pishirilmoqda', body: e.order_number + ' kitchen da',   type: 'kitchen'  },
+                    'ready':      { title: '🔔 TAYYOR!',        body: e.order_number + ' — ' + e.table, type: 'warning'  },
+                    'served':     { title: '🍽 Xizmat qilindi', body: e.order_number + ' — ' + e.table, type: 'success'  },
+                    'cancelled':  { title: '❌ Bekor qilindi',  body: e.order_number,                   type: 'info'     },
+                    'billed':     { title: '💳 To\'landi',      body: e.order_number,                   type: 'success'  },
+                };
+                const msg = messages[e.new_status];
+                if (msg) showToast(msg, msg.type);
+            });
+    }
+</script>
+<style>
+    @keyframes slideIn { from { transform:translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+</style>
+
 <body class="bg-gray-50 antialiased">
 
 @php
@@ -115,16 +161,16 @@
                 </a>
             @endif
             {{-- Reservations --}}
-            <a href="{{ route('reservations.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all mt-0.5
+            @if(auth()->user()->isManager())
+                <a href="{{ route('reservations.index') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all mt-0.5
    {{ request()->routeIs('reservations*') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                     viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
-                </svg>
-                <span class="flex-1">Bronlar</span>
-            </a>
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                    </svg>
+                    <span class="flex-1">Bronlar</span>
+                </a>
+            @endif
 
             @if(auth()->user()->canAccess('billing'))
                 <a href="{{ route('billing.index') }}"
@@ -182,6 +228,14 @@
                     </a>
                 </div>
             @endif
+            <a href="{{ route('combos.index') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
+   {{ request()->routeIs('combos*') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
+                </svg>
+                <span class="flex-1">Combos</span>
+            </a>
         </nav>
 
         <div class="px-3 pb-3 border-t border-gray-100 pt-3">

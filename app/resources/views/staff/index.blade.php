@@ -25,6 +25,13 @@
        {{ $filter === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
         All ({{ \App\Models\User::count() }})
     </a>
+    <a href="{{ route('staff.shifts') }}"
+       class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-xl transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Navbatlar
+    </a>
     <a href="{{ route('staff.index', ['filter'=>'pending']) }}"
        class="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium transition-all
        {{ $filter === 'pending' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">

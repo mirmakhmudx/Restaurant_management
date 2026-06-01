@@ -129,6 +129,29 @@
       <path value="$PROJECT_DIR$/app/vendor/guzzlehttp/guzzle" />
       <path value="$PROJECT_DIR$/app/vendor/guzzlehttp/psr7" />
       <path value="$PROJECT_DIR$/app/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/app/vendor/dompdf/php-svg-lib" />
+      <path value="$PROJECT_DIR$/app/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/app/vendor/dompdf/php-font-lib" />
+      <path value="$PROJECT_DIR$/app/vendor/barryvdh/laravel-dompdf" />
+      <path value="$PROJECT_DIR$/app/vendor/sabberworm/php-css-parser" />
+      <path value="$PROJECT_DIR$/app/vendor/masterminds/html5" />
+      <path value="$PROJECT_DIR$/app/vendor/thecodingmachine/safe" />
+      <path value="$PROJECT_DIR$/app/vendor/simplesoftwareio/simple-qrcode" />
+      <path value="$PROJECT_DIR$/app/vendor/bacon/bacon-qr-code" />
+      <path value="$PROJECT_DIR$/app/vendor/dasprid/enum" />
+      <path value="$PROJECT_DIR$/app/vendor/laravel/reverb" />
+      <path value="$PROJECT_DIR$/app/vendor/clue/redis-protocol" />
+      <path value="$PROJECT_DIR$/app/vendor/clue/redis-react" />
+      <path value="$PROJECT_DIR$/app/vendor/evenement/evenement" />
+      <path value="$PROJECT_DIR$/app/vendor/ratchet/rfc6455" />
+      <path value="$PROJECT_DIR$/app/vendor/pusher/pusher-php-server" />
+      <path value="$PROJECT_DIR$/app/vendor/react/event-loop" />
+      <path value="$PROJECT_DIR$/app/vendor/react/stream" />
+      <path value="$PROJECT_DIR$/app/vendor/react/cache" />
+      <path value="$PROJECT_DIR$/app/vendor/react/promise" />
+      <path value="$PROJECT_DIR$/app/vendor/react/promise-timer" />
+      <path value="$PROJECT_DIR$/app/vendor/react/socket" />
+      <path value="$PROJECT_DIR$/app/vendor/react/dns" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.3">

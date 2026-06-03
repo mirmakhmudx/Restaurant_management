@@ -9,12 +9,13 @@
 </head>
 
 {{-- Real-time Notifications --}}
-<div id="toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:320px"></div>
+<div id="toast-container"
+     style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:320px"></div>
 
 <script>
     function showToast(message, type = 'info') {
         const colors = {
-            info:    '#3b82f6',
+            info: '#3b82f6',
             success: '#22c55e',
             warning: '#f59e0b',
             kitchen: '#f97316',
@@ -37,12 +38,12 @@
         window.Echo.channel('orders')
             .listen('.status.updated', (e) => {
                 const messages = {
-                    'confirmed':  { title: '✅ Tasdiqlandi',    body: e.order_number + ' — ' + e.table, type: 'success'  },
-                    'preparing':  { title: '🔥 Pishirilmoqda', body: e.order_number + ' kitchen da',   type: 'kitchen'  },
-                    'ready':      { title: '🔔 TAYYOR!',        body: e.order_number + ' — ' + e.table, type: 'warning'  },
-                    'served':     { title: '🍽 Xizmat qilindi', body: e.order_number + ' — ' + e.table, type: 'success'  },
-                    'cancelled':  { title: '❌ Bekor qilindi',  body: e.order_number,                   type: 'info'     },
-                    'billed':     { title: '💳 To\'landi',      body: e.order_number,                   type: 'success'  },
+                    'confirmed': {title: '✅ Tasdiqlandi', body: e.order_number + ' — ' + e.table, type: 'success'},
+                    'preparing': {title: '🔥 Pishirilmoqda', body: e.order_number + ' kitchen da', type: 'kitchen'},
+                    'ready': {title: '🔔 TAYYOR!', body: e.order_number + ' — ' + e.table, type: 'warning'},
+                    'served': {title: '🍽 Xizmat qilindi', body: e.order_number + ' — ' + e.table, type: 'success'},
+                    'cancelled': {title: '❌ Bekor qilindi', body: e.order_number, type: 'info'},
+                    'billed': {title: '💳 To\'landi', body: e.order_number, type: 'success'},
                 };
                 const msg = messages[e.new_status];
                 if (msg) showToast(msg, msg.type);
@@ -50,7 +51,16 @@
     }
 </script>
 <style>
-    @keyframes slideIn { from { transform:translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
 </style>
 
 <body class="bg-gray-50 antialiased">
@@ -165,8 +175,10 @@
                 <a href="{{ route('reservations.index') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all mt-0.5
    {{ request()->routeIs('reservations*') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
                     </svg>
                     <span class="flex-1">Bronlar</span>
                 </a>
@@ -191,9 +203,12 @@
             @if(auth()->user()->isManager())
                 <a href="{{ route('tables.qr') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all mt-0.5 text-gray-600 hover:bg-gray-100">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75z"/>
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75z"/>
                     </svg>
                     <span class="flex-1">QR Kodlar</span>
                 </a>
@@ -232,7 +247,8 @@
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
    {{ request()->routeIs('combos*') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
                 </svg>
                 <span class="flex-1">Combos</span>
             </a>
@@ -284,10 +300,14 @@
                     </a>
                 @endif
                 <span class="text-sm text-gray-400 font-mono" id="clk">--:--</span>
+                @php
+                    $rc = ["manager"=>"bg-purple-100 text-purple-800 border-purple-300","chef"=>"bg-orange-100 text-orange-800 border-orange-300","waiter"=>"bg-blue-100 text-blue-800 border-blue-300","cashier"=>"bg-green-100 text-green-800 border-green-300"];
+                    $rcls = $rc[auth()->user()->role->value] ?? "bg-gray-100 text-gray-700 border-gray-200";
+                @endphp
                 <span
-                    class="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200">
-                    {{ auth()->user()->getRoleIcon() }} {{ auth()->user()->getRoleLabel() }}
-                </span>
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border {{ $rcls }} shadow-sm">
+    {{ auth()->user()->getRoleIcon() }} {{ auth()->user()->getRoleLabel() }}
+</span>
             </div>
         </header>
 

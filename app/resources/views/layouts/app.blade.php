@@ -6,6 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') — BitePlate</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    
 </head>
 
 {{-- Real-time Notifications --}}
@@ -299,15 +301,24 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>{{ $_pending }} pending
                     </a>
                 @endif
+                {{-- Notification Bell --}}
+                @php $notifCount = \App\Models\Order::whereIn("status",["pending","ready"])->count(); @endphp
+                <a href="{{ route("orders.index") }}" class="relative p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+                    </svg>
+                    @if($notifCount > 0)
+                    <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">{{ $notifCount > 9 ? "9+" : $notifCount }}</span>
+                    @endif
+                </a>
                 <span class="text-sm text-gray-400 font-mono" id="clk">--:--</span>
                 @php
-                    $rc = ["manager"=>"bg-purple-100 text-purple-800 border-purple-300","chef"=>"bg-orange-100 text-orange-800 border-orange-300","waiter"=>"bg-blue-100 text-blue-800 border-blue-300","cashier"=>"bg-green-100 text-green-800 border-green-300"];
-                    $rcls = $rc[auth()->user()->role->value] ?? "bg-gray-100 text-gray-700 border-gray-200";
+                $rc = ["manager"=>"bg-purple-100 text-purple-800 border-purple-300","chef"=>"bg-orange-100 text-orange-800 border-orange-300","waiter"=>"bg-blue-100 text-blue-800 border-blue-300","cashier"=>"bg-green-100 text-green-800 border-green-300"];
+                $rcls = $rc[auth()->user()->role->value] ?? "bg-gray-100 text-gray-700 border-gray-200";
                 @endphp
-                <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border {{ $rcls }} shadow-sm">
-    {{ auth()->user()->getRoleIcon() }} {{ auth()->user()->getRoleLabel() }}
-</span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border {{ $rcls }} shadow-sm">
+                    {{ auth()->user()->getRoleIcon() }} {{ auth()->user()->getRoleLabel() }}
+                </span>
             </div>
         </header>
 

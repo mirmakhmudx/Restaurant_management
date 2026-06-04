@@ -57,6 +57,12 @@
                         </svg>
                         {{ $waitMin }}min
                     </span>
+                            <span class="text-xs font-mono px-1.5 py-0.5 rounded-md"
+                                  x-data="{ m:0 }"
+                                  x-init="const s=new Date('{{ $order->created_at }}');setInterval(()=>{m=Math.floor((new Date()-s)/60000);},10000);m=Math.floor((new Date()-new Date('{{ $order->created_at }}'))/60000);"
+                                  x-bind:class="m>20?'bg-red-100 text-red-600 font-bold':m>10?'bg-amber-100 text-amber-600':'bg-gray-100 text-gray-500'"
+                                  x-text="m+' min'">
+                            </span>
                 </div>
             </div>
 

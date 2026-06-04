@@ -120,3 +120,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('menu/modifiers/{modifier}/toggle',           [\App\Http\Controllers\MenuModifierController::class, 'toggle'])->name('menu.modifiers.toggle');
     Route::delete('menu/modifiers/{modifier}',                 [\App\Http\Controllers\MenuModifierController::class, 'destroy'])->name('menu.modifiers.destroy');
 });
+
+Route::get('/lang/{locale}', function (string $locale) {
+    if (in_array($locale, ['en', 'uz', 'ru'])) {
+        session(['locale' => $locale]);
+        session()->save();
+    }
+    return redirect()->back()->withHeaders(['Cache-Control' => 'no-cache']);
+})->name('lang.switch');

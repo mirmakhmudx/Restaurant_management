@@ -67,7 +67,23 @@ class DashboardController extends Controller
         $recentOrders = Order::with(['table','waiter'])->latest()->take(6)->get();
         $pendingStaff = User::where('is_active', false)->count();
 
-        return view('dashboard', compact('stats', 'recentOrders', 'pendingStaff'));
+        $chartLabels = [];
+        $chartData   = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $chartLabels[] = $date->format('D');
+            $chartData[]   = Bill::whereDate('paid_at', $date)->sum('grand_total')
+                           ?: Bill::whereDate('paid_at', $date)->sum('total');
+        }
+        $staffPerformance = \DB::table('orders')
+            ->join('users', 'orders.waiter_id', '=', 'users.id')
+            ->select('users.name', \DB::raw('COUNT(*) as total_orders'), \DB::raw('SUM(orders.total) as total_revenue'))
+            ->whereDate('orders.created_at', '>=', now()->subDays(30))
+            ->whereNotIn('orders.status', ['cancelled','pending'])
+            ->groupBy('users.id','users.name')
+            ->orderByDesc('total_orders')
+            ->limit(5)->get();
+        return view('dashboard', compact('stats','recentOrders','pendingStaff','chartLabels','chartData','staffPerformance'));
     }
 
     private function chefDashboard(): View

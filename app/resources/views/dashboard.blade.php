@@ -321,3 +321,33 @@
 </div>
 
 @endsection
+
+
+<script>
+new Chart(document.getElementById('revenueChart'),{
+    type:'bar',
+    data:{
+        labels:@json($chartLabels),
+        datasets:[{label:'Daromad (£)',data:@json($chartData),
+        backgroundColor:'rgba(17,24,39,0.85)',borderRadius:8,borderSkipped:false}]
+    },
+    options:{responsive:true,plugins:{legend:{display:false}},
+        scales:{y:{beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{callback:v=>'£'+v}},
+                x:{grid:{display:false}}}}
+});
+</script>
+
+
+<script>
+new Chart(document.getElementById('revenueChart'),{
+    type:'bar',
+    data:{
+        labels:@json($chartLabels),
+        datasets:[{label:'Daromad (£)',data:@json($chartData),
+        backgroundColor:'rgba(17,24,39,0.85)',borderRadius:8,borderSkipped:false}]
+    },
+    options:{responsive:true,plugins:{legend:{display:false}},
+        scales:{y:{beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{callback:v=>'£'+v}},
+                x:{grid:{display:false}}}}
+});
+</script>
